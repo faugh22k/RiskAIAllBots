@@ -151,7 +151,8 @@ public class BotStarter implements Bot
 			i++;
 		}
 
-		GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
+		//GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
+		RunGame.addToLog("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
 		return placeArmiesMoves;
 	}
 	
@@ -276,6 +277,7 @@ public class BotStarter implements Bot
 			return doNotNeedArmies;
 		} */
 		//GUI.makeAlert("number of regions in need of armies: " + needArmies.size());
+		//RunGame.addToLog("number of regions in need of armies: " + needArmies.size());
 		return needArmies;
 		
 	}
@@ -332,7 +334,8 @@ public class BotStarter implements Bot
 		}
 		
 		if (attackTransferMoves.size() > 0){
-			GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
+			//GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
+			RunGame.addToLog("number of attacks/transfers: " + attackTransferMoves.size());
 		}
 		return attackTransferMoves;
 	}
