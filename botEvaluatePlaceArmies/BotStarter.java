@@ -218,11 +218,12 @@ public class BotStarter implements Bot
 		
 		int need = 0;
 		for (Region other : surrounding){
-			if (other.getPlayerName().equals("neutral")){
+			/*if (other.getPlayerName().equals("neutral")){
 				need += 1;
 			} else {
 				need += other.getArmies();//2;
-			}
+			}*/
+			need += other.getArmies();
 		}
 		
 		return need;
