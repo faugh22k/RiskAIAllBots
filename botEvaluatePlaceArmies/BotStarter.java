@@ -122,7 +122,7 @@ public class BotStarter implements Bot
 		}
 		
 		//GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\nnumArmies: " + numArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size());   
-		 
+		String armiesReport = ""; 
 		int i = 0;
 		// give armies to each region in need until we run out. 
 		while(numArmies > 0 && i < 50){
@@ -137,16 +137,20 @@ public class BotStarter implements Bot
 			 
 			int armiesAdding = 0;
 			if (giveByNeed){
-				armiesAdding = (int) Math.ceil(armiesPerNeed*current.need); 
+				armiesAdding = (int) Math.round(armiesPerNeed*current.need); 
+				if (armiesAdding > numArmies){
+					armiesAdding = numArmies;
+				}
 			} else {
 				armiesAdding = armiesPerRegion;
 			}
-			//GUI.makeAlert("giving " + armiesAdding + " armies"); 
+			armiesReport += armiesAdding + ",";
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, current.region, armiesAdding));  
 			numArmies -= armiesAdding; 
 			i++;
 		}
 
+		//GUI.makeAlert(armiesReport);
 		return placeArmiesMoves;
 	}
 	
@@ -224,10 +228,19 @@ public class BotStarter implements Bot
 			return 0;
 		}
 		
-		int need = 0;
+		int need = 1;
+		int numNeutral = 0;
+		int numOpponent = 0;
 		for (Region other : surrounding){ 
-			need += other.getArmies();
+			if (!other.getPlayerName().equals("neutral")){
+				numOpponent++;
+				need += other.getArmies();
+			} else {
+				numNeutral++;
+			}
 		}
+		
+		//need += numNeutral/4;
 		
 		//GUI.makeAlert("need of armies for " + region.getId() + ": " + need);
 		return need; 
@@ -317,6 +330,7 @@ public class BotStarter implements Bot
 			}
 		}
 		
+		//GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
 		return attackTransferMoves;
 	}
 
@@ -356,10 +370,10 @@ public class BotStarter implements Bot
 		@Override
 		public int compareTo(RegionWrapper other) {
 			if (other == null){ 
-				return -1;
+				return 1;
 			} 
 
-			return this.need - other.need;
+			return other.need - this.need;
 		}
 		
 	}
