@@ -15,7 +15,7 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package bot;
+package botEvaluatePlaceArmies;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -104,9 +104,13 @@ public class BotStarter implements Bot
 		// give armies based on need 
 		boolean giveByNeed = true;
 		
-		// floor because 
-		int armiesPerNeed = (int)Math.floor((double)totalEvaluatedArmyNeed/gettingArmies.size()); 
-		int armiesPerRegion = (int)Math.ceil((double)gettingArmies.size());
+		// need of 2
+		// and 4 to place
+		// want 2 per need: 4/2
+		// so numArmies/totalNeed
+		
+		double armiesPerNeed = numArmies/totalEvaluatedArmyNeed; 
+		int armiesPerRegion = (int)Math.ceil((double)numArmies/gettingArmies.size());
 		
 		
 		if (armiesPerNeed == 0){
@@ -126,7 +130,7 @@ public class BotStarter implements Bot
 			 
 			int armiesAdding = 0;
 			if (giveByNeed){
-				armiesAdding = armiesPerNeed*current.need; 
+				armiesAdding = (int) Math.ceil(armiesPerNeed*current.need); 
 			} else {
 				armiesAdding = armiesPerRegion;
 			}
@@ -141,9 +145,9 @@ public class BotStarter implements Bot
 	 
 	private boolean isBorder(Region region, String myName){
 
-			/*LinkedList<Region> neighbors = region.getNeighbors();
+			LinkedList<Region> neighbors = region.getNeighbors();
 
-			int numNeighborsChecked = 0;
+			/*int numNeighborsChecked = 0;
 			while(numNeighborsChecked < neighbors.size()){
 				
 				if(!neighbors.get(numNeighborsChecked).ownedByPlayer(myName)){
@@ -152,11 +156,20 @@ public class BotStarter implements Bot
 					return true;
 				}
 				numNeighborsChecked++;
+			}*/
+			
+			for(Region neighbor : neighbors){ 
+				
+				if(!neighbor.ownedByPlayer(myName)){
+
+					// add it to list then exit while loop
+					return true;
+				} 
 			}
 
-			return false;*/
+			return false;
 		
-			return getOpponentsSurrounding(region, myName).size() > 0;
+			//return getOpponentsSurrounding(region, myName).size() > 0;
 	}
 	
 	/**
@@ -170,20 +183,27 @@ public class BotStarter implements Bot
 		LinkedList<Region> neighbors = region.getNeighbors();
 		LinkedList<Region> surrounding = new LinkedList<Region>(); 
 
-		int numNeighborsChecked = 0;
+		/*int numNeighborsChecked = 0;
 		while(numNeighborsChecked < neighbors.size()){
 			
 			if(!neighbors.get(numNeighborsChecked).ownedByPlayer(myName)){
 				surrounding.add(neighbors.get(numNeighborsChecked));
 			}
 			numNeighborsChecked++;
+		}*/
+		
+		for(Region neighbor : neighbors){
+			
+			if(!neighbor.ownedByPlayer(myName)){
+				surrounding.add(neighbor); 
+			} 
 		}
 
 		return surrounding;
 	}
 
 	/**
-	 * Calculate the amount of need regoin has for additional armies. 
+	 * Calculate the amount of need region has for additional armies. 
 	 * @param region the region to calculate need for. 
 	 * @param myName our player name. 
 	 * @return the need of region. 
@@ -201,7 +221,7 @@ public class BotStarter implements Bot
 			if (other.getPlayerName().equals("neutral")){
 				need += 1;
 			} else {
-				need += 2;
+				need += other.getArmies();//2;
 			}
 		}
 		
