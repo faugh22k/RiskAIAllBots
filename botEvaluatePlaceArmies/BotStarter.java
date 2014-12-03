@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
+import view.GUI;
+
 import main.Region;
+import main.RunGame;
 import move.AttackTransferMove;
 import move.PlaceArmiesMove;
 
@@ -109,16 +112,20 @@ public class BotStarter implements Bot
 		// want 2 per need: 4/2
 		// so numArmies/totalNeed
 		
-		double armiesPerNeed = numArmies/totalEvaluatedArmyNeed; 
+		double armiesPerNeed = (numArmies+0.0)/totalEvaluatedArmyNeed; 
 		int armiesPerRegion = (int)Math.ceil((double)numArmies/gettingArmies.size());
 		
 		
-		if (armiesPerNeed == 0){
+		
+		if (armiesPerNeed <= 0.0){
 			giveByNeed = false;
 		}
+		
+		//GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\nnumArmies: " + numArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size());   
 		 
+		int i = 0;
 		// give armies to each region in need until we run out. 
-		while(numArmies > 0){
+		while(numArmies > 0 && i < 50){
 			
 			if (gettingArmies.size() == 0 && givenArmies.size() > 0){
 				PriorityQueue<RegionWrapper> nowEmpty = gettingArmies;
@@ -134,9 +141,10 @@ public class BotStarter implements Bot
 			} else {
 				armiesAdding = armiesPerRegion;
 			}
-			System.out.println("giving " + armiesAdding + " armies"); 
+			//GUI.makeAlert("giving " + armiesAdding + " armies"); 
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, current.region, armiesAdding));  
 			numArmies -= armiesAdding; 
+			i++;
 		}
 
 		return placeArmiesMoves;
@@ -217,16 +225,12 @@ public class BotStarter implements Bot
 		}
 		
 		int need = 0;
-		for (Region other : surrounding){
-			/*if (other.getPlayerName().equals("neutral")){
-				need += 1;
-			} else {
-				need += other.getArmies();//2;
-			}*/
+		for (Region other : surrounding){ 
 			need += other.getArmies();
 		}
 		
-		return need;
+		//GUI.makeAlert("need of armies for " + region.getId() + ": " + need);
+		return need; 
 	}
 	
 	/**
@@ -238,23 +242,26 @@ public class BotStarter implements Bot
 	 */
 	private PriorityQueue<RegionWrapper> getRegionsNeedingArmies(String myName, LinkedList<Region> visible){
 		PriorityQueue<RegionWrapper> needArmies = new PriorityQueue<RegionWrapper>();
-		PriorityQueue<RegionWrapper> doNotNeedArmies = new PriorityQueue<RegionWrapper>();
+		//PriorityQueue<RegionWrapper> doNotNeedArmies = new PriorityQueue<RegionWrapper>();
 		totalEvaluatedArmyNeed = 0; 
 		
 		for(Region current : visible){
-			int need = evaluateNeedArmies(current, myName);
-			totalEvaluatedArmyNeed += need;
-			RegionWrapper wrapper = new RegionWrapper(current, need);
-			if (need > 0){
-				needArmies.add(wrapper);
-			} else if (needArmies.size() == 0){
-				doNotNeedArmies.add(wrapper);
+			if (current.getPlayerName().equals(myName)){
+				int need = evaluateNeedArmies(current, myName);
+				totalEvaluatedArmyNeed += need;
+				RegionWrapper wrapper = new RegionWrapper(current, need);
+				if (need > 0){
+					needArmies.add(wrapper);
+				} /*else if (needArmies.size() == 0){
+					doNotNeedArmies.add(wrapper);
+				}*/
 			}
 		}
 		
-		if (needArmies.size() == 0){
+		/*if (needArmies.size() == 0){
 			return doNotNeedArmies;
-		} 
+		} */
+		//GUI.makeAlert("number of regions in need of armies: " + needArmies.size());
 		return needArmies;
 		
 	}
