@@ -93,6 +93,7 @@ public class BotStarter implements Bot
 
 		// number of armies left
 		int numArmies = state.getStartingArmies();
+		int originalNumArmies = state.getStartingArmies();
 
 		// find all regions held by player that is bordering other regions
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions(); 
@@ -150,7 +151,7 @@ public class BotStarter implements Bot
 			i++;
 		}
 
-		//GUI.makeAlert(armiesReport);
+		GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
 		return placeArmiesMoves;
 	}
 	
@@ -330,7 +331,9 @@ public class BotStarter implements Bot
 			}
 		}
 		
-		//GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
+		if (attackTransferMoves.size() > 0){
+			GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
+		}
 		return attackTransferMoves;
 	}
 
