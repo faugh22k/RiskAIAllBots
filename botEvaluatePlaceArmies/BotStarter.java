@@ -31,7 +31,7 @@ import move.PlaceArmiesMove;
 public class BotStarter implements Bot 
 {
 	private int totalEvaluatedArmyNeed = 0;
-	
+	private int round = 0;
 	
 	/**
 	 * A method used at the start of the game to decide which player start with what Regions. 6 Regions are required to be returned.
@@ -87,7 +87,7 @@ public class BotStarter implements Bot
 	@Override
 	public ArrayList<PlaceArmiesMove> getPlaceArmiesMoves(BotState state, Long timeOut) 
 	{
-
+		round++;
 		ArrayList<PlaceArmiesMove> placeArmiesMoves = new ArrayList<PlaceArmiesMove>();
 		String myName = state.getMyPlayerName();
 
@@ -98,12 +98,14 @@ public class BotStarter implements Bot
 		// find all regions held by player that is bordering other regions
 		LinkedList<Region> visibleRegions = state.getVisibleMap().getRegions(); 
 
-		System.out.println("\n\ngoing to get the regions needing armies!"); 
+		//careful! System.out.println("\n\ngoing to get the regions needing armies!");
+		//System.out.println("\n\ngoing to get the regions needing armies!");
 		
 		PriorityQueue<RegionWrapper> gettingArmies = getRegionsNeedingArmies(myName, visibleRegions);
 		PriorityQueue<RegionWrapper> givenArmies = new PriorityQueue<RegionWrapper>();
  
-		System.out.println("number needing armies: " + gettingArmies.size()); 
+		//careful! System.out.println("number needing armies: " + gettingArmies.size());
+		//System.out.println("number needing armies: " + gettingArmies.size()); 
 		
 		// give armies based on need 
 		boolean giveByNeed = true;
@@ -124,6 +126,7 @@ public class BotStarter implements Bot
 		
 		//GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\nnumArmies: " + numArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size());   
 		String armiesReport = ""; 
+		String armiesTotal = ""; 
 		int i = 0;
 		// give armies to each region in need until we run out. 
 		while(numArmies > 0 && i < 50){
@@ -135,7 +138,8 @@ public class BotStarter implements Bot
 			}
 			
 			RegionWrapper current = gettingArmies.poll(); // poll is the same as pop
-			 
+			givenArmies.add(current);
+			
 			int armiesAdding = 0;
 			if (giveByNeed){
 				armiesAdding = (int) Math.round(armiesPerNeed*current.need); 
@@ -146,13 +150,17 @@ public class BotStarter implements Bot
 				armiesAdding = armiesPerRegion;
 			}
 			armiesReport += armiesAdding + ",";
+			armiesTotal += (armiesAdding + current.region.getArmies()) + ",";
 			placeArmiesMoves.add(new PlaceArmiesMove(myName, current.region, armiesAdding));  
 			numArmies -= armiesAdding; 
 			i++;
 		}
 
-		//GUI.makeAlert("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
-		RunGame.addToLog("totalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport);
+		GUI.makeAlert("round " + round + "\ntotalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport + "\n" + armiesTotal);
+		RunGame.addToLog("round " + round + "\ntotalEvaluatedArmyNeed: " + totalEvaluatedArmyNeed + "\narmiesPerNeed: " + armiesPerNeed + "\narmiesPerRegion: " + armiesPerRegion + "\noriginalNumArmies: " + originalNumArmies + "\ngiveByNeed: " + giveByNeed + "\nnumber regions to give to: " + gettingArmies.size() + "\n\n" + armiesReport + "\n" + armiesTotal);
+		
+		System.out.println(""); 
+		
 		return placeArmiesMoves;
 	}
 	
@@ -334,9 +342,11 @@ public class BotStarter implements Bot
 		}
 		
 		if (attackTransferMoves.size() > 0){
-			//GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
+			GUI.makeAlert("number of attacks/transfers: " + attackTransferMoves.size());
 			RunGame.addToLog("number of attacks/transfers: " + attackTransferMoves.size());
 		}
+		
+		System.out.println(""); 
 		return attackTransferMoves;
 	}
 
